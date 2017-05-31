@@ -6,69 +6,40 @@ using UnityEngine;
  * You're hungry.
  */
 public class Customer : MonoBehaviour {
-    private GameObject tray = null;
-    public GameObject Tray {
-        get { return tray; }
-        set { tray = value; }
+
+    public enum State { EMPTY_HANDED, HOLDING_ITEM }
+    private State currentState = State.EMPTY_HANDED;
+    public State CurrentState {
+        get { return currentState; }
+        set { currentState = value; }
     }
 
-    public bool isCarryingTray() {
-        return tray != null;
+    private DefaultMouseBehavior defaultMouseBehavior = new DefaultMouseBehavior();
+
+    private GameObject heldItem = null;
+    public GameObject HeldItem {
+        get { return heldItem; }
+        set { heldItem = value; }
     }
 
-
-    private float clickDistance = 3.0f;
-
-	// Use this for initialization
-	void Start () {
-	}
-	
-	// Update is called once per frame
 	void Update () {
-        // Determine if the user has clicked on anything within a certain radius. 
-		if (Input.GetMouseButtonDown(0)) {
-            interact();
-        }
-        else if (Input.GetMouseButtonDown(1)) {
-            throwTray();
+        // TODO: create a state machine for the Customer out of multiple scripts.
+        switch (currentState) {
+            case State.EMPTY_HANDED:
+                // Determine if the user has clicked on anything within a certain radius. 
+                if (Input.GetMouseButtonDown(0)) {
+                   defaultMouseBehavior.leftClick(this);
+                }
+                break;
+            case State.HOLDING_ITEM:
+                if (Input.GetMouseButtonDown(0)) {
+                    heldItem.SendMessage("leftClick", this);
+                }
+                else if (Input.GetMouseButtonDown(1)) {
+                    heldItem.SendMessage("rightClick", this);
+                }
+
+                break;
         }
 	}
-
-    private void FixedUpdate() {
-    }
-
-    /**
-     * Interact with whatever the Customer clicks on.
-     */
-    private void interact() {
-        RaycastHit hit;
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit, clickDistance)) {
-            hit.transform.gameObject.SendMessage("onClick", this);
-        }
-    }
-
-    /**
-     * Throw the tray in disgust.
-     */
-    private void throwTray() {
-        if (isCarryingTray()) {
-            TrayBehavior trayBehavior = tray.GetComponent<TrayBehavior>();
-
-            trayBehavior.throwTray(Camera.main.transform.forward);
-
-            tray = null;
-        }
-
-    }
-
-    public void applyForce(GameObject gameObject) {
-        Rigidbody rigidbody = gameObject.GetComponent<Rigidbody>();
-        rigidbody.AddForce(Camera.main.transform.forward * 20, ForceMode.Impulse);
-        rigidbody.AddTorque(gameObject.transform.right * 10);
-    }
-
-
-
 }

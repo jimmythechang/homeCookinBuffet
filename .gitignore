@@ -77,3 +77,9 @@ sysinfo.txt
 .consulo/
 /*.tmp
 /*.svd
+
+# ================ #
+# Project specific #
+# ================ #
+/Assets/FREE Food Pack*
+/Assets/Dinner table*

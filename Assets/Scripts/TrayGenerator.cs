@@ -17,15 +17,15 @@ public class TrayGenerator : MonoBehaviour, Clickable {
      * Instantiates a tray before a Customer.
      */
     public void onClick(Customer customer) {
-        if (!customer.isCarryingTray()) {
+        if (customer.CurrentState == Customer.State.EMPTY_HANDED) {
             Transform customerTransform = customer.transform;
-
             Vector3 trayPosition = customerTransform.position;
 
             trayPosition += customerTransform.forward * TRAY_DISTANCE;
             trayPosition.y += TRAY_HEIGHT;
 
-            customer.Tray = Instantiate(tray, trayPosition, customerTransform.rotation, customerTransform);
+            customer.HeldItem = Instantiate(tray, trayPosition, customerTransform.rotation, customerTransform);
+            customer.CurrentState = Customer.State.HOLDING_ITEM;
         }
     }
 }
