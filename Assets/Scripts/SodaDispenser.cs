@@ -55,4 +55,8 @@ public class SodaDispenser : MonoBehaviour, Clickable {
     private void OnTriggerExit(Collider other) {
         sodaStream.Stop();
     }
+
+    void OnParticleCollision(GameObject particle) {
+        Debug.Log(particle.name);
+    }
 }

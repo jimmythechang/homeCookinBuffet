@@ -1,55 +1,88 @@
 ﻿using UnityEngine;
 
 /**
- * A class for modifying a particular mesh representing soda.
+ * A class for modifying a specific mesh representing soda in a glass.
  */
 public class SodaFill : MonoBehaviour {
 
-    public float fillPercentage;
+    private float oldFillPercentage = 0;
+    public float currentFillPercentage;
 
     private Mesh mesh;
     private Vector3[] originalVertices;
+
+    private float glassRatio = 0.60485f;
+    private float glassHeight = 3;
+
+    // A very particular list of vertices we want to modify in the mesh.
+    private int[] pointsToAlter = new int[] {0, 1, 2, 3, 4, 5, 6, 7, 16, 19, 20, 23, 24, 27, 28, 31, 32, 35, 36, 39, 40, 43, 44, 47};
 
 	void Start () {
         mesh = GetComponent<MeshFilter>().mesh;
 
         // Persist the coordinates of the original vertices.  
         originalVertices = mesh.vertices;
+
+        // The mesh is hidden at the start.
+        GetComponent<MeshRenderer>().enabled = false;
 	}
 	
-	// Update is called once per frame
 	void Update () {
-        Mesh mesh = GetComponent<MeshFilter>().mesh;
-        Vector3[] vertices = mesh.vertices;      
-
-        for (int i = 0; i < 8; i++) {
-            vertices[i] = alterVertex(vertices[i]);
+        if (oldFillPercentage != currentFillPercentage) {
+            updateMesh();
+            raiseSphereCollider();
         }
-
-        
-
-        
-        mesh.vertices = vertices;
     }
 
-    private Vector3 alterVertex(Vector3 vertex) {
-        float xSign = 1f;
-        float zSign = 1f;
+    /**
+     * Updates the soda mesh to simulate the climb of the soda up the glass.
+     */
+    private void updateMesh() {
+        Mesh mesh = GetComponent<MeshFilter>().mesh;
+        Vector3[] vertices = mesh.vertices;
 
-        
-        if (vertex.x < 0) {
-            xSign = -1f;
+        if (currentFillPercentage != 0) {
+            GetComponent<MeshRenderer>().enabled = true;
         }
 
-        if (vertex.z < 0) {
-            zSign = -1f;
+        if (currentFillPercentage > 100) {
+            currentFillPercentage = 100;
         }
 
-        vertex.x = xSign * 0.34653f * (fillPercentage / 100f) + (xSign * .572921f);
-        vertex.z = zSign * 0.34653f * (fillPercentage / 100f) + (zSign * .572921f);
+        // Scale each vertex accordingly.
+        for (int i = 0; i < pointsToAlter.Length; i++) {
+            int index = pointsToAlter[i];
+            vertices[index] = alterVertex(index, vertices[index]);
+        }
 
-        vertex.y = 3 * fillPercentage / 100f;
+        mesh.vertices = vertices;
+        oldFillPercentage = currentFillPercentage;
+    }
+
+    /**
+     * Raises the sphere collider responsible for interacting with fluid particles.
+     */
+    private void raiseSphereCollider() {
+        SphereCollider collider = GetComponent<SphereCollider>();
+        Vector3 colliderPosition = collider.transform.position;
+        collider.transform.position.Set(colliderPosition.x, glassHeight * currentFillPercentage / 100f, colliderPosition.z);
+    }
+
+    /**
+     * Scales a given vertex accordingly
+     */
+    private Vector3 alterVertex(int index, Vector3 vertex) {
+        vertex.x = (glassRatio * (currentFillPercentage / 100f) + 1) * originalVertices[index].x;
+        vertex.z = (glassRatio * (currentFillPercentage / 100f) + 1) * originalVertices[index].z;
+
+        vertex.y = glassHeight * currentFillPercentage / 100f;
         return new Vector3(vertex.x, vertex.y, vertex.z);
     }
-   
+
+
+    void OnParticleCollision(GameObject particle) {
+        Debug.Log(particle.name);
+    }
+        
+    
 }
