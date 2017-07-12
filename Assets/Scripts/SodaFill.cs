@@ -56,6 +56,7 @@ public class SodaFill : MonoBehaviour {
         }
 
         mesh.vertices = vertices;
+        mesh.RecalculateBounds();
         oldFillPercentage = currentFillPercentage;
     }
 
@@ -79,9 +80,11 @@ public class SodaFill : MonoBehaviour {
         return new Vector3(vertex.x, vertex.y, vertex.z);
     }
 
-
+    /**
+     * TODO: only call whenever a soda particle enters the glass.
+     */
     void OnParticleCollision(GameObject particle) {
-        Debug.Log(particle.name);
+        currentFillPercentage += 0.5f;
     }
         
     
