@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/**
+ * Gotta carry all that food back somehow, right?
+ */
 public class Tray : Deletable, Holdable {
-
 
     private List<GameObject> items;
 
@@ -13,7 +15,6 @@ public class Tray : Deletable, Holdable {
     public static readonly string ACTIVE_TRAY_TAG = "HeldTray";
 
 	void Start () {
-        //audio = GetComponent<AudioSource>();
         items = new List<GameObject>();
         defaultMouseBehavior = new DefaultMouseBehavior();
         tag = ACTIVE_TRAY_TAG;
@@ -30,14 +31,29 @@ public class Tray : Deletable, Holdable {
         }
     }
 
+    /**
+     * Remove an item from the Tray.
+     * 
+     * <param name="item">The item to be removed (if it exists).</param>
+     */
     public void removeFromItems(GameObject item) {
         items.Remove(item);
     }
 
+    /**
+     * Default leftClick() behavior.
+     * 
+     * <param name="customer">The Customer who clicked.</param>
+     */
     public void leftClick(Customer customer) {
         defaultMouseBehavior.leftClick(customer);
     }
 
+    /**
+     * Throw the Tray away.
+     * 
+     * <param name="customer">The Customer who clicked.</param>
+     */
     public void rightClick(Customer customer) {
         tag = "Untagged";
 
@@ -58,10 +74,13 @@ public class Tray : Deletable, Holdable {
             reactivatePhysics(item);
             applyForce(generateRandomVector(direction), item);
         }
+
+        flagForDeletion();
     }
 
     /**
      * Reactives the collider and physics on the supplied GameObject.
+     * 
      * <param name="gameObject">The GameObject to reactivate physics on.</param>
      */
     private void reactivatePhysics(GameObject gameObject) {
@@ -71,6 +90,12 @@ public class Tray : Deletable, Holdable {
         rigidbody.isKinematic = false;
     }
 
+    /**
+     * Method for applying a force on a GameObject in a given direction.
+     * 
+     * <param name="direction">The Vector3 direction to apply force in.</param>
+     * <param name="gameObject">The GameObject to apply force on.</param>
+     */
     private void applyForce(Vector3 direction, GameObject gameObject) {
         Rigidbody rigidbody = gameObject.GetComponent<Rigidbody>();
         rigidbody.AddForce(direction * 20, ForceMode.Impulse);
@@ -82,6 +107,8 @@ public class Tray : Deletable, Holdable {
      * 
      * Returns a randomly offset Vector3, based on 
      * a provided Vector3.
+     * 
+     * <param name="direction">Vector3</param>
      */
     private Vector3 generateRandomVector(Vector3 direction) {
         direction.Normalize();
