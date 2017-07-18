@@ -1,18 +1,22 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Tray : MonoBehaviour, Holdable {
+public class Tray : Deletable, Holdable {
 
-    //AudioSource audio;
 
     private List<GameObject> items;
 
+    public int maxItems = 10;
+
     private DefaultMouseBehavior defaultMouseBehavior;
+
+    public static readonly string ACTIVE_TRAY_TAG = "HeldTray";
 
 	void Start () {
         //audio = GetComponent<AudioSource>();
         items = new List<GameObject>();
         defaultMouseBehavior = new DefaultMouseBehavior();
+        tag = ACTIVE_TRAY_TAG;
     }
 
     /**
@@ -21,13 +25,13 @@ public class Tray : MonoBehaviour, Holdable {
      * <param name="item">The item to be added.</param>
      */
     public void addItem(GameObject item) {
-        items.Add(item);
+        if (items.Count < maxItems) {
+            items.Add(item);
+        }
     }
 
-    void OnCollisionEnter(Collision collision) {
-        if (collision.relativeVelocity.magnitude > 1) {
-            //audio.Play();
-        }
+    public void removeFromItems(GameObject item) {
+        items.Remove(item);
     }
 
     public void leftClick(Customer customer) {
@@ -35,12 +39,19 @@ public class Tray : MonoBehaviour, Holdable {
     }
 
     public void rightClick(Customer customer) {
+        tag = "Untagged";
+
         throwTray(Camera.main.transform.forward);
         customer.CurrentState = Customer.State.EMPTY_HANDED;
     }
 
+    /**
+     * Throw the tray and everything on it in the specified direction.
+     * 
+     * <param name="direction">The general Vector3 in which to throw everything.</param>
+     */
     public void throwTray(Vector3 direction) {
-        reactivateTrayPhysics();
+        reactivatePhysics(this.gameObject);
 
         applyForce(direction, this.gameObject);
         foreach (GameObject item in items) {
@@ -50,23 +61,14 @@ public class Tray : MonoBehaviour, Holdable {
     }
 
     /**
-     * Reactivate the collider and physics for this Tray.
-     */
-    public void reactivateTrayPhysics() {
-        GameObject tray = this.gameObject;
-
-        // Disassociate the tray from the Customer.
-        tray.transform.parent = null;
-        reactivatePhysics(tray);
-    }
-
-    /**
      * Reactives the collider and physics on the supplied GameObject.
      * <param name="gameObject">The GameObject to reactivate physics on.</param>
      */
     private void reactivatePhysics(GameObject gameObject) {
-        gameObject.GetComponent<Collider>().enabled = true;
-        gameObject.GetComponent<Rigidbody>().useGravity = true;
+        gameObject.transform.parent = null;
+        Rigidbody rigidbody = gameObject.GetComponent<Rigidbody>();
+        rigidbody.useGravity = true;
+        rigidbody.isKinematic = false;
     }
 
     private void applyForce(Vector3 direction, GameObject gameObject) {

@@ -15,8 +15,13 @@ public class PlateGenerator : MonoBehaviour, Clickable {
 
             Tray tray = customer.HeldItem.GetComponent<Tray>();
 
-            // TODO: add functionality for stacking plates, and consider an upper limit.
-            GameObject plateObject = Instantiate(plate, customer.HeldItem.transform);
+            // TODO: consider adding an upper limit.
+
+            Transform trayTransform = customer.HeldItem.transform;
+            Vector3 aboveTray = trayTransform.position + (Vector3.up * 0.3f) + (Vector3.back * .1f);
+            
+            GameObject plateObject = Instantiate(plate, aboveTray, trayTransform.rotation, trayTransform);
+
             tray.addItem(plateObject);
         }
     }
