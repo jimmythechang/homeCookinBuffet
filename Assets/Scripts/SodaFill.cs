@@ -70,7 +70,10 @@ public class SodaFill : MonoBehaviour {
     }
 
     /**
-     * Scales a given vertex accordingly
+     * Scales a given vertex accordingly.
+     * 
+     * <param name="index">int</param>
+     * <param name="vertex">Vector3</param>
      */
     private Vector3 alterVertex(int index, Vector3 vertex) {
         vertex.x = (glassRatio * (currentFillPercentage / 100f) + 1) * originalVertices[index].x;
@@ -81,7 +84,7 @@ public class SodaFill : MonoBehaviour {
     }
 
     /**
-     * TODO: only call whenever a soda particle enters the glass.
+     * TODO: only call whenever a soda particle enters the glass. Delete the particle too.
      */
     void OnParticleCollision(GameObject particle) {
         currentFillPercentage += 0.5f;

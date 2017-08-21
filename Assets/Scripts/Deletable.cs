@@ -3,7 +3,7 @@
 /**
  * A class for things that should be cleaned up.
  */
-public class Deletable : MonoBehaviour {
+public class Deletable : Creatable {
 
     private int lifetime = 30;
 

@@ -33,7 +33,7 @@ public class SodaDispenser : MonoBehaviour, Clickable {
             glassPosition += customerTransform.forward * GLASS_DISTANCE;
             glassPosition.y += GLASS_HEIGHT;
 
-            customer.HeldItem = Instantiate(glass, glassPosition, customerTransform.rotation, customerTransform);
+            customer.HeldItem = Creatable.Create<Cup>(glass, glassPosition, customerTransform.rotation, customerTransform);
             customer.CurrentState = Customer.State.HOLDING_ITEM;
         }
     }
@@ -54,9 +54,5 @@ public class SodaDispenser : MonoBehaviour, Clickable {
      */
     private void OnTriggerExit(Collider other) {
         sodaStream.Stop();
-    }
-
-    void OnParticleCollision(GameObject particle) {
-        Debug.Log(particle.name);
     }
 }

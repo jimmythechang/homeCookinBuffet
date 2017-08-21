@@ -24,7 +24,7 @@ public class TrayGenerator : MonoBehaviour, Clickable {
             trayPosition += customerTransform.forward * TRAY_DISTANCE;
             trayPosition.y += TRAY_HEIGHT;
 
-            customer.HeldItem = Instantiate(tray, trayPosition, customerTransform.rotation, customerTransform);
+            customer.HeldItem = Creatable.Create<Tray>(tray, trayPosition, customerTransform.rotation, customerTransform);
             customer.CurrentState = Customer.State.HOLDING_ITEM;
         }
     }

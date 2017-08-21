@@ -11,18 +11,20 @@ public class PlateGenerator : MonoBehaviour, Clickable {
      */
     public void onClick(Customer customer) {
         if (customer.CurrentState == Customer.State.HOLDING_ITEM &&
-            customer.HeldItem.GetComponent<Tray>() != null) {
+            customer.HeldItem is Tray) {
 
-            Tray tray = customer.HeldItem.GetComponent<Tray>();
+            Tray tray = (Tray) customer.HeldItem;
 
-            // TODO: consider adding an upper limit.
-
-            Transform trayTransform = customer.HeldItem.transform;
+            Transform trayTransform = tray.transform;
             Vector3 aboveTray = trayTransform.position + (Vector3.up * 0.3f) + (Vector3.back * .1f);
             
-            GameObject plateObject = Instantiate(plate, aboveTray, trayTransform.rotation, trayTransform);
+            Plate plateObject = Creatable.Create<Plate>(plate, aboveTray, trayTransform.rotation, trayTransform);
 
-            tray.addItem(plateObject);
+            // Prevent the Plate from interacting with the Player's collider when spawned/placed on the Tray.
+            Physics.IgnoreCollision(plateObject.GetComponent<Collider>(), customer.GetComponent<Collider>());
+
+            tray.addItem(plateObject.gameObject);
+            plateObject.HeldTray = tray;
         }
     }
 }

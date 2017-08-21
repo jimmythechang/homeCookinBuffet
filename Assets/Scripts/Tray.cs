@@ -10,14 +10,14 @@ public class Tray : Deletable, Holdable {
 
     public int maxItems = 10;
 
-    private DefaultMouseBehavior defaultMouseBehavior;
+    // The index of the top item on the plate.
+    private int topItem = -1;
 
-    public static readonly string ACTIVE_TRAY_TAG = "HeldTray";
+    private DefaultMouseBehavior defaultMouseBehavior;
 
 	void Start () {
         items = new List<GameObject>();
         defaultMouseBehavior = new DefaultMouseBehavior();
-        tag = ACTIVE_TRAY_TAG;
     }
 
     /**
@@ -28,6 +28,7 @@ public class Tray : Deletable, Holdable {
     public void addItem(GameObject item) {
         if (items.Count < maxItems) {
             items.Add(item);
+            topItem++;
         }
     }
 
@@ -38,6 +39,7 @@ public class Tray : Deletable, Holdable {
      */
     public void removeFromItems(GameObject item) {
         items.Remove(item);
+        topItem--;
     }
 
     /**

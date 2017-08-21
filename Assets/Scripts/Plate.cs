@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 /**
  * Food goes here!
@@ -11,19 +12,16 @@ public class Plate : Deletable {
 
     // A reference to the single Tray held by the Player.
     private Tray heldTray;
+    public Tray HeldTray {
+        get { return heldTray; }
+        set { heldTray = value; }
+    }
+
+    private List<Food> food;
 
     private void Start() {
         initializing = true;
         withinTrayZone = false;
-
-        // Plates can only be instantiated if the Player is holding a Tray (for now).
-        heldTray = GameObject.FindGameObjectWithTag(Tray.ACTIVE_TRAY_TAG).GetComponent<Tray>();
-        if (heldTray == null) {
-            Destroy(gameObject);
-        }
-
-        // Prevent the Plate from interacting with the Player's collider when spawned/placed on the Tray.
-        Physics.IgnoreCollision(GetComponent<Collider>(), GameObject.FindGameObjectWithTag("Player").GetComponent<Collider>());
     }
 
     /**

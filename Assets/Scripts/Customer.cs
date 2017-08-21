@@ -14,8 +14,8 @@ public class Customer : MonoBehaviour {
 
     private DefaultMouseBehavior defaultMouseBehavior = new DefaultMouseBehavior();
 
-    private GameObject heldItem = null;
-    public GameObject HeldItem {
+    private Holdable heldItem = null;
+    public Holdable HeldItem {
         get { return heldItem; }
         set { heldItem = value; }
     }
@@ -31,10 +31,10 @@ public class Customer : MonoBehaviour {
                 break;
             case State.HOLDING_ITEM:
                 if (Input.GetMouseButtonDown(0)) {
-                    heldItem.SendMessage("leftClick", this);
+                    heldItem.leftClick(this);
                 }
                 else if (Input.GetMouseButtonDown(1)) {
-                    heldItem.SendMessage("rightClick", this);
+                    heldItem.rightClick(this);
                 }
 
                 break;
